@@ -22,10 +22,8 @@ MAX_LEVEL = 5
 def pytest_configure(config):
     redirect_plugin = config.pluginmanager.getplugin('outputredirect')
     if redirect_plugin:
-        print "output redirection plugin is installed"  # DEBUG
         import sys
         if isinstance(sys.stdout, redirect_plugin.LogOutputRedirection):
-            print "and enabled"  # DEBUG
             MultiLevelLogging.output_redirect_enabled = True
 
 
