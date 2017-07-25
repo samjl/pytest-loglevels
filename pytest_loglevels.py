@@ -1,6 +1,6 @@
 ##
 # @file loglevels.py
-# @author Sam Lea <sam.lea@aviatnet.com>
+# @author Sam Lea (samjl) <samjlea@gmail.com>
 # @created 12/07/17
 # @brief pytest plugin loglevels - functions to assign and print a log
 # level to test log messages.

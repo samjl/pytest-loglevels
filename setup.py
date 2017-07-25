@@ -4,6 +4,8 @@ from setuptools import setup
 setup(
     name="pytest-loglevels",
     version='0.0.1',
+    author='Sam Lea',
+    author_email='samjlea@gmail.com',
     py_modules=['pytest_loglevels'],
     install_requires=['pytest>=2.7.0'],
     # the following makes a plugin available to pytest
