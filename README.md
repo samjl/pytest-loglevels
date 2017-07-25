@@ -1,4 +1,4 @@
-# loglevels
+# pytest-loglevels Plugin
 
 Prototyping a pytest plugin to apply log levels to messages
 
