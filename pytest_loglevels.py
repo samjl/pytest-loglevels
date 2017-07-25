@@ -6,9 +6,27 @@
 # level to test log messages.
 # Current limitations: log level cannot be applied to standard print
 # function.
+# Supports pytest-outputredirect plugin so all log messages (including
+# standard print function) are assigned a log level and associated
+# step.
+
+import pytest
 
 MIN_LEVEL = 0
 MAX_LEVEL = 5
+
+
+# Move this configuration to the end to ensure outputredirect (is
+# installed) is configured first.
+@pytest.hookimpl(trylast=True)
+def pytest_configure(config):
+    redirect_plugin = config.pluginmanager.getplugin('outputredirect')
+    if redirect_plugin:
+        print "output redirection plugin is installed"  # DEBUG
+        import sys
+        if isinstance(sys.stdout, redirect_plugin.LogOutputRedirection):
+            print "and enabled"  # DEBUG
+            MultiLevelLogging.output_redirect_enabled = True
 
 
 def pytest_namespace():
@@ -48,7 +66,57 @@ def pytest_namespace():
 
         # TODO add block printing for lists and strings containing linebreaks
 
-    name = {"log": LogLevel}
+    class Redirect:
+        # These functions are not required to be in the public API but
+        # are required by the output redirection plugin.
+        @staticmethod
+        def is_level_set():
+            """Return True if current message being processed has a log
+            level assigned. Used to differentiate between messages
+            originating from this API and those from the standard print
+            functions.
+            Note: This function is used by the outputredirect plugin.
+            """
+            return MultiLevelLogging.log_level_set
+
+        @staticmethod
+        def get_current_level():
+            """Return the current log level.
+            Note: This function is used by the outputredirect plugin.
+            """
+            return MultiLevelLogging.current_level
+
+        @staticmethod
+        def get_current_step(log_level):
+            """Given a log level return the CURRENT step and index for
+            the message being processed.
+            Note: This function is used by the outputredirect plugin
+            when processing messages from this API.
+            """
+            return MultiLevelLogging.current_step[index_from_level(
+                log_level)], MultiLevelLogging.current_index
+
+        @staticmethod
+        def get_step_for_level(log_level):
+            """Given a log level return the NEXT step and index.
+            Note: This function is used by the outputredirect plugin
+            when processing standard print function messages.
+            """
+            return get_next_step(log_level)
+
+        @staticmethod
+        def increment_level(increment=1):
+            """Increment the current log level."""
+            log_level = MultiLevelLogging.current_level + increment
+            return set_current_level(log_level)
+
+        @staticmethod
+        def set_level(log_level):
+            """Set the current log level."""
+            return set_current_level(log_level)
+
+    name = {"log": LogLevel,
+            "redirect": Redirect}
     return name
 
 
@@ -69,24 +137,36 @@ def set_log_parameters(msg, log_level):
     if log_level is None:
         log_level = MultiLevelLogging.current_level
     set_current_level(log_level)
-    step = get_next_step(log_level)
-    print "{}-{} {}".format(log_level, step, msg)
+    step, index = get_next_step(log_level)
+    MultiLevelLogging.log_level_set = True
+    if MultiLevelLogging.output_redirect_enabled:
+        # if the outputredirect plugin is installed and enabled
+        print msg
+    else:
+        # Don't print index as it doesn't mean much in this situation
+        # (not every message is given an index)
+        print "{}-{} {}".format(log_level, step, msg)
+    MultiLevelLogging.log_level_set = False
 
 
 class MultiLevelLogging:
     # Keep track of the current log level and the step for each log
     # level.
+    current_index = 0
     current_level = 1
     current_step = [0] * (MAX_LEVEL - MIN_LEVEL)
+    log_level_set = False
+    output_redirect_enabled = False
 
 
 def get_next_step(log_level):
-    # Return the next step for the specified log level.
+    # Return the next step and index for the specified log level.
     MultiLevelLogging.current_step[index_from_level(log_level)] += 1
     step = MultiLevelLogging.current_step[index_from_level(log_level)]
     reset_higher_levels(log_level)
     MultiLevelLogging.current_level = log_level
-    return step
+    MultiLevelLogging.current_index += 1
+    return step, MultiLevelLogging.current_index
 
 
 def index_from_level(log_level):
