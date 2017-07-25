@@ -3,7 +3,7 @@ from setuptools import setup
 
 setup(
     name="pytest-loglevels",
-    version='0.0.1',
+    version='0.1.0',
     author='Sam Lea',
     author_email='samjlea@gmail.com',
     py_modules=['pytest_loglevels'],

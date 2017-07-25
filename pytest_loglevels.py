@@ -1,5 +1,5 @@
 ##
-# @file loglevels.py
+# @file pytest-loglevels.py
 # @author Sam Lea (samjl) <samjlea@gmail.com>
 # @created 12/07/17
 # @brief pytest plugin loglevels - functions to assign and print a log
