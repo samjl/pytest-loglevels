@@ -21,13 +21,12 @@ def pytest_namespace():
         @staticmethod
         def high_level_step(msg):
             """Print a message at the highest log level."""
-            set_log_parameters("High level step: {}".format(msg), log_level=1)
+            set_log_parameters(msg, log_level=1)
 
         @staticmethod
         def detail_step(msg):
             """Print a message at the second highest log level."""
-            set_log_parameters("Detail level step: {}".format(msg),
-                               log_level=2)
+            set_log_parameters(msg, log_level=2)
 
         @staticmethod
         def step(msg, log_level=None):
@@ -35,7 +34,7 @@ def pytest_namespace():
             If optional argument log_level is not specified or None
             then the log level of the previous message is applied.
             """
-            set_log_parameters("Step: {}".format(msg), log_level)
+            set_log_parameters(msg, log_level)
 
         @staticmethod
         def step_increment(msg, increment=1):
@@ -43,8 +42,7 @@ def pytest_namespace():
             new level.
             """
             current_level = MultiLevelLogging.current_level
-            set_log_parameters("Step inc: {}".format(msg), current_level +
-                               increment)
+            set_log_parameters(msg, current_level + increment)
 
         # TODO add block printing for lists and strings containing linebreaks
 
