@@ -109,6 +109,10 @@ def pytest_namespace():
             """Set the current log level."""
             return set_current_level(log_level)
 
+        @staticmethod
+        def get_current_l1_msg():
+            return MultiLevelLogging.current_l1_msg
+
     name = {"log": LogLevel,
             "redirect": Redirect}
     return name
@@ -131,6 +135,8 @@ def set_log_parameters(msg, log_level):
     if log_level is None:
         log_level = MultiLevelLogging.current_level
     valid_log_level = set_current_level(log_level)
+    if MultiLevelLogging.current_level == 1:
+        MultiLevelLogging.current_l1_msg = msg
     step, index = get_next_step(valid_log_level)
     MultiLevelLogging.log_level_set = True
     if MultiLevelLogging.output_redirect_enabled:
@@ -151,6 +157,7 @@ class MultiLevelLogging:
     current_step = [0] * (MAX_LEVEL - MIN_LEVEL)
     log_level_set = False
     output_redirect_enabled = False
+    current_l1_msg = None
 
 
 def get_next_step(log_level):
