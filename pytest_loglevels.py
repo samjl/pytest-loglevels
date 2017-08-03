@@ -130,8 +130,8 @@ def set_log_parameters(msg, log_level):
     """
     if log_level is None:
         log_level = MultiLevelLogging.current_level
-    set_current_level(log_level)
-    step, index = get_next_step(log_level)
+    valid_log_level = set_current_level(log_level)
+    step, index = get_next_step(valid_log_level)
     MultiLevelLogging.log_level_set = True
     if MultiLevelLogging.output_redirect_enabled:
         # if the outputredirect plugin is installed and enabled
@@ -139,7 +139,7 @@ def set_log_parameters(msg, log_level):
     else:
         # Don't print index as it doesn't mean much in this situation
         # (not every message is given an index)
-        print "{}-{} {}".format(log_level, step, msg)
+        print "{}-{} {}".format(valid_log_level, step, msg)
     MultiLevelLogging.log_level_set = False
 
 
