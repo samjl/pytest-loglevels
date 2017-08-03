@@ -4,8 +4,6 @@
 # @created 12/07/17
 # @brief pytest plugin loglevels - functions to assign and print a log
 # level to test log messages.
-# Current limitations: log level cannot be applied to standard print
-# function.
 # Supports pytest-outputredirect plugin so all log messages (including
 # standard print function) are assigned a log level and associated
 # step.
